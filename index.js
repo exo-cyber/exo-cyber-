@@ -3,7 +3,14 @@
 const config = require('./config');
 const log = require('./logger');
 
-const modules = [require('./general'), require('./ai'), require('./sticker'), require('./music'), require('./profile')];
+const modules = [
+  require('./general'),
+  require('./ai'),
+  require('./sticker'),
+  require('./music'),
+  require('./profile'),
+  require('./fun')
+];
 
 const list = [];
 const byName = new Map();
