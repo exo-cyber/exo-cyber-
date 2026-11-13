@@ -1,26 +1,24 @@
-// Builds the menu automatically from the registered commands.
-const config = require('./config');
+const { reply } = require('../lib/helpers');
+const { PREFIX, BOT_NAME } = require('../config');
 
-const ORDER = ['GENERAL', 'AI SYSTEM', 'STICKER TOOLS', 'MEDIA', 'PROFILE'];
+const ORDER = ['GENERAL', 'AI SYSTEM', 'STICKER TOOLS', 'MEDIA', 'PROFILE', 'GROUP', 'FUN'];
 
-function buildMenu(commands) {
-  const groups = new Map();
-  for (const c of commands) {
-    if (c.hidden) continue;
-    const cat = c.category || 'OTHER';
-    if (!groups.has(cat)) groups.set(cat, []);
-    for (const entry of c.menu || [c.name]) groups.get(cat).push(entry);
-  }
-  const cats = [...ORDER.filter((c) => groups.has(c)), ...[...groups.keys()].filter((c) => !ORDER.includes(c))];
+module.exports = {
+  name: 'menu',
+  alias: ['help'],
+  category: 'GENERAL',
+  async run({ sock, msg }) {
+    const { getPlugins } = require('../loader');
+    const groups = {};
+    for (const p of getPlugins()) (groups[p.category] ||= []).push(p.name);
 
-  const lines = ['╭━━━「 E X O - C Y B E R 」', '┃', '┃ Status: Online', '┃ Personality: Nonchalant.', '┃'];
-  for (const cat of cats) {
-    lines.push(`┣━━━「 ${cat} 」`);
-    for (const e of groups.get(cat)) lines.push(`┃ ◈ ${config.prefix}${e}`);
-    lines.push('┃');
-  }
-  lines.push('╰━━━━━━━━━━━━', '', 'Choose a command. I suppose.');
-  return lines.join('\n');
-}
-
-module.exports = { buildMenu };
+    const cats = [...ORDER.filter((c) => groups[c]), ...Object.keys(groups).filter((c) => !ORDER.includes(c))];
+    let out = `╭━━━「 ${BOT_NAME} 」\n┃\n┃ Status: Online\n┃ Personality: Nonchalant.\n┃\n`;
+    for (const c of cats) {
+      out += `┣━━━「 ${c} 」\n`;
+      for (const n of groups[c]) out += `┃ ◈ ${PREFIX}${n}${n === 'ai' ? ' on/off' : ''}\n`;
+      out += '┃\n';
+    }
+    await reply(sock, msg, out + '╰━━━━━━━━━━━━');
+  },
+};

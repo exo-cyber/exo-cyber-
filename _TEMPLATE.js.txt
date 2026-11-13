@@ -1,0 +1,10 @@
+// Copy to plugins/yourcommand.js (remove .txt) to add a new command.
+const { reply } = require('../lib/helpers');
+module.exports = {
+  name: 'yourcommand',
+  alias: [],
+  category: 'FUN', // GENERAL | AI SYSTEM | STICKER TOOLS | MEDIA | PROFILE | GROUP | FUN
+  async run({ sock, msg, jid, args, text }) {
+    await reply(sock, msg, 'Hello from a plugin.');
+  },
+};
